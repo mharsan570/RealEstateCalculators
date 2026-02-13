@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Estate Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(to bottom right, #eff6ff, #e0e7ff);
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(to right, #2563eb, #4f46e5);
+            padding: 2rem;
+            color: white;
+        }
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        .header h1 {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        .mode-buttons {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        .btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+        }
+        .btn-active {
+            background: white;
+            color: #2563eb;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .btn-inactive {
+            background: #3b82f6;
+            color: white;
+        }
+        .btn-inactive:hover {
+            background: #60a5fa;
+        }
+        .content {
+            padding: 2rem;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+        @media (min-width: 768px) {
+            .grid-2 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .header h1 {
+                font-size: 2.5rem;
+            }
+        }
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+        .label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+        .input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+        }
+        .input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        .input-with-icon {
+            position: relative;
+        }
+        .input-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 0.75rem;
+            color: #9ca3af;
+        }
+        .input-with-icon input {
+            padding-left: 2.5rem;
+        }
+        .hint {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+        .range-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-top: 0.5rem;
+        }
+        .grid-cols-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        .result-card {
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .result-card-blue {
+            background: linear-gradient(to bottom right, #eff6ff, #e0e7ff);
+        }
+        .result-card-green {
+            background: linear-gradient(to bottom right, #f0fdf4, #dcfce7);
+        }
+        .result-card-purple {
+            background: linear-gradient(to bottom right, #faf5ff, #f3e8ff);
+        }
+        .result-card h3 {
+            font-weight: bold;
+            font-size: 1.125rem;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+        .expense-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .expense-label {
+            color: #374151;
+        }
+        .expense-value {
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .total-row {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            margin-top: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .total-label {
+            font-weight: bold;
+            color: #1f2937;
+            font-size: 1.125rem;
+        }
+        .total-value {
+            font-weight: bold;
+            color: #2563eb;
+            font-size: 1.5rem;
+        }
+        .metric-card {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+        }
+        .metric-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 0.25rem;
+        }
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1f2937;
+        }
+        .metric-value-green {
+            color: #059669;
+        }
+        .metric-value-red {
+            color: #dc2626;
+        }
+        .metric-value-large {
+            font-size: 2rem;
+        }
+        .metric-hint {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+        .info-box {
+            background: #dbeafe;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+        }
+        .info-text {
+            font-size: 0.875rem;
+            color: #374151;
+        }
+        .disclaimer {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 1rem;
+            border-radius: 0.25rem;
+        }
+        .disclaimer-text {
+            font-size: 0.75rem;
+            color: #374151;
+        }
+        .hidden {
+            display: none;
+        }
+        select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            background: white;
+        }
+        select:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 5px;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #3b82f6;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #3b82f6;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+        svg {
+            width: 1.25rem;
+            height: 1.25rem;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .header svg {
+            width: 2rem;
+            height: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-content">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                    </svg>
+                    <h1>Real Estate Calculator</h1>
+                </div>
+                
+                <!-- Mode Toggle -->
+                <div class="mode-buttons">
+                    <button id="buyerBtn" onclick="setMode('buyer')" class="btn btn-active">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        Home Buyer
+                    </button>
+                    <button id="investorBtn" onclick="setMode('investor')" class="btn btn-inactive">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                        </svg>
+                        Rental Investor
+                    </button>
+                    <button id="rentVsBuyBtn" onclick="setMode('rentVsBuy')" class="btn btn-inactive">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                        Rent vs. Buy
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="content">
+                <div class="grid-2">
+                    <!-- Input Section -->
+                    <div>
+                        <h2 class="section-title">Property Details</h2>
+                        
+                        <div class="input-group">
+                            <label class="label">Purchase Price</label>
+                            <div class="input-with-icon">
+                                <span class="input-icon">$</span>
+                                <input type="number" id="purchasePrice" value="300000" oninput="calculate()" class="input">
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="label">ZIP Code</label>
+                            <input type="text" id="zipCode" placeholder="Enter ZIP code" maxlength="5" oninput="calculate()" class="input">
+                            <p class="hint">Used to estimate property tax & insurance</p>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="label">Square Feet</label>
+                            <input type="number" id="squareFeet" value="1500" oninput="calculate()" class="input">
+                        </div>
+
+                        <div class="input-group">
+                            <label class="label">Down Payment: <span id="downPaymentLabel">20</span>%</label>
+                            <input type="range" id="downPaymentPercent" min="0" max="50" value="20" oninput="calculate()">
+                            <div class="range-labels">
+                                <span id="downPaymentAmount">$60,000</span>
+                                <span id="loanAmount">Loan: $240,000</span>
+                            </div>
+                            <p class="hint" id="pmiWarning" style="color: #dc2626; font-weight: 600;"></p>
+                        </div>
+
+                        <div class="grid-cols-2">
+                            <div class="input-group">
+                                <label class="label">Interest Rate (%)</label>
+                                <input type="number" id="interestRate" step="0.1" value="7.0" oninput="calculate()" class="input">
+                            </div>
+                            <div class="input-group">
+                                <label class="label">Loan Term (years)</label>
+                                <select id="loanTerm" onchange="calculate()">
+                                    <option value="15">15 years</option>
+                                    <option value="30" selected>30 years</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="label">Monthly HOA Fees</label>
+                            <div class="input-with-icon">
+                                <span class="input-icon">$</span>
+                                <input type="number" id="hoaFees" value="0" oninput="calculate()" class="input">
+                            </div>
+                        </div>
+
+                        <!-- Investment Details -->
+                        <div id="investmentInputs" class="hidden">
+                            <h3 class="section-title" style="margin-top: 1.5rem;">Investment Details</h3>
+                            
+                            <div class="input-group">
+                                <label class="label">Monthly Rent</label>
+                                <div class="input-with-icon">
+                                    <span class="input-icon">$</span>
+                                    <input type="number" id="monthlyRent" value="2000" oninput="calculate()" class="input">
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <label class="label">Vacancy Rate: <span id="vacancyRateLabel">8</span>%</label>
+                                <input type="range" id="vacancyRate" min="0" max="20" value="8" oninput="calculate()">
+                            </div>
+
+                            <div class="input-group">
+                                <label class="label">Property Management: <span id="propertyManagementLabel">10</span>%</label>
+                                <input type="range" id="propertyManagementPercent" min="0" max="15" value="10" oninput="calculate()">
+                            </div>
+
+                            <div class="input-group">
+                                <label class="label">Annual Maintenance: <span id="maintenanceLabel">1</span>% of Purchase Price</label>
+                                <input type="range" id="maintenancePercent" min="0.5" max="3" step="0.1" value="1" oninput="calculate()">
+                            </div>
+                        </div>
+
+                        <!-- Rent vs Buy Inputs -->
+                        <div id="rentVsBuyInputs" class="hidden">
+                            <h3 class="section-title" style="margin-top: 1.5rem;">Rental Comparison</h3>
+                            
+                            <div class="input-group">
+                                <label class="label">Monthly Rent (similar property)</label>
+                                <div class="input-with-icon">
+                                    <span class="input-icon">$</span>
+                                    <input type="number" id="rentAmount" value="1800" oninput="calculate()" class="input">
+                                </div>
+                                <p class="hint">What would a comparable property rent for in the same area?</p>
+                            </div>
+
+                            <div class="input-group">
+                                <label class="label">Renter's Insurance (monthly)</label>
+                                <div class="input-with-icon">
+                                    <span class="input-icon">$</span>
+                                    <input type="number" id="rentersInsurance" value="25" oninput="calculate()" class="input">
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <label class="label">Expected Annual Rent Increase</label>
+                                <input type="range" id="rentIncrease" min="0" max="10" step="0.5" value="3" oninput="calculate()">
+                                <div class="range-labels">
+                                    <span>0%</span>
+                                    <span id="rentIncreaseLabel">3%</span>
+                                    <span>10%</span>
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <label class="label">Expected Home Appreciation Rate</label>
+                                <input type="range" id="homeAppreciation" min="0" max="10" step="0.5" value="3" oninput="calculate()">
+                                <div class="range-labels">
+                                    <span>0%</span>
+                                    <span id="homeAppreciationLabel">3%</span>
+                                    <span>10%</span>
+                                </div>
+                                <p class="hint">Historical average is 3-4% annually</p>
+                            </div>
+
+                            <div class="input-group">
+                                <label class="label">Investment Return Rate (if renting)</label>
+                                <input type="range" id="investmentReturn" min="0" max="15" step="0.5" value="7" oninput="calculate()">
+                                <div class="range-labels">
+                                    <span>0%</span>
+                                    <span id="investmentReturnLabel">7%</span>
+                                    <span>15%</span>
+                                </div>
+                                <p class="hint">What return could you get investing the down payment? (S&P 500 avg: ~10%)</p>
+                            </div>
+
+                            <div class="input-group">
+                                <label class="label">Years to Compare</label>
+                                <input type="range" id="yearsToCompare" min="1" max="30" value="5" oninput="calculate()">
+                                <div class="range-labels">
+                                    <span>1 year</span>
+                                    <span id="yearsLabel">5 years</span>
+                                    <span>30 years</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Results Section -->
+                    <div>
+                        <h2 class="section-title">
+                            <span id="resultsTitle">Monthly Payment Breakdown</span>
+                        </h2>
+
+                        <!-- Monthly Expenses -->
+                        <div class="result-card result-card-blue">
+                            <h3>Monthly Expenses</h3>
+                            
+                            <div>
+                                <div class="expense-row">
+                                    <span class="expense-label">Principal & Interest</span>
+                                    <span class="expense-value" id="mortgagePI">$0.00</span>
+                                </div>
+                                
+                                <div class="expense-row">
+                                    <span class="expense-label">Property Tax (<span id="taxRateDisplay">1.2</span>%)</span>
+                                    <span class="expense-value" id="propertyTax">$0.00</span>
+                                </div>
+                                
+                                <div class="expense-row">
+                                    <span class="expense-label">Insurance (estimated)</span>
+                                    <span class="expense-value" id="insurance">$0.00</span>
+                                </div>
+                                
+                                <div id="pmiRow" class="expense-row hidden">
+                                    <span class="expense-label">PMI (Private Mortgage Insurance)</span>
+                                    <span class="expense-value" id="pmiDisplay">$0.00</span>
+                                </div>
+                                
+                                <div id="hoaRow" class="expense-row hidden">
+                                    <span class="expense-label">HOA Fees</span>
+                                    <span class="expense-value" id="hoaDisplay">$0.00</span>
+                                </div>
+                                
+                                <div id="maintenanceRow" class="expense-row hidden">
+                                    <span class="expense-label">Maintenance</span>
+                                    <span class="expense-value" id="maintenanceDisplay">$0.00</span>
+                                </div>
+
+                                <div id="propertyManagementRow" class="expense-row hidden">
+                                    <span class="expense-label">Property Management</span>
+                                    <span class="expense-value" id="propertyManagementDisplay">$0.00</span>
+                                </div>
+                                
+                                <div class="total-row">
+                                    <span class="total-label">Total Monthly Payment</span>
+                                    <span class="total-value" id="totalMonthly">$0.00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Investment Metrics -->
+                        <div id="investmentMetrics" class="result-card result-card-green hidden">
+                            <h3>Investment Metrics</h3>
+                            
+                            <div>
+                                <div class="metric-card">
+                                    <div class="metric-label">Effective Monthly Rent</div>
+                                    <div class="metric-value metric-value-large" id="effectiveRent">$0.00</div>
+                                    <div class="metric-hint" id="vacancyNote">After 8% vacancy</div>
+                                </div>
+                                
+                                <div class="metric-card">
+                                    <div class="metric-label">Monthly Cash Flow</div>
+                                    <div class="metric-value metric-value-large" id="monthlyCashFlow">$0.00</div>
+                                    <div class="metric-hint">Annual: <span id="annualCashFlow">$0.00</span></div>
+                                </div>
+                                
+                                <div class="grid-cols-2">
+                                    <div class="metric-card">
+                                        <div class="metric-label">Cash-on-Cash Return</div>
+                                        <div class="metric-value" id="cashOnCash">0.00%</div>
+                                    </div>
+                                    
+                                    <div class="metric-card">
+                                        <div class="metric-label">Cap Rate</div>
+                                        <div class="metric-value" id="capRate">0.00%</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="metric-card">
+                                    <div class="metric-label">Total Initial Investment</div>
+                                    <div class="metric-value" id="totalInitialInvestment">$0.00</div>
+                                    <div class="metric-hint">Down payment + estimated closing costs (3-5%)</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Home Buyer Summary -->
+                        <div id="buyerSummary" class="result-card result-card-purple">
+                            <h3>Purchase Summary</h3>
+                            
+                            <div>
+                                <div class="expense-row">
+                                    <span class="expense-label">Down Payment (<span id="downPercentDisplay">20</span>%)</span>
+                                    <span class="expense-value" id="downPaymentSummary">$60,000</span>
+                                </div>
+                                
+                                <div class="expense-row">
+                                    <span class="expense-label">Estimated Closing Costs (3-5%)</span>
+                                    <span class="expense-value" id="closingCostsEstimate">$0.00</span>
+                                </div>
+                                
+                                <div class="total-row">
+                                    <span class="total-label">Total Cash Needed</span>
+                                    <span class="total-value" style="color: #7c3aed;" id="totalCashNeeded">$0.00</span>
+                                </div>
+                                
+                                <div class="info-box">
+                                    <p class="info-text" id="incomeRecommendation">
+                                        <strong>Recommended Income:</strong> Your monthly payment should not exceed 28% of your gross monthly income.
+                                    </p>
+                                </div>
+
+                                <div style="margin-top: 1rem; padding: 1rem; background: #fef3c7; border-radius: 0.5rem;">
+                                    <p style="font-size: 0.75rem; color: #374151; margin-bottom: 0.5rem;">
+                                        <strong>Note on Closing Costs:</strong> Actual closing costs vary significantly by state, lender, and property type. They typically range from 3-5% of purchase price and include inspections, appraisal, title insurance, attorney fees, lender fees, and prepaid items.
+                                    </p>
+                                    <p style="font-size: 0.75rem; color: #374151; font-weight: 600;">
+                                        💡 <strong>Pro Tip:</strong> Get Loan Estimates from at least 2-3 lenders within the same week. Lenders often compete on rates and fees when they know you're shopping around, which can save you thousands.
+                                    </p>
+                                </div>
+
+                                <div style="margin-top: 1rem; padding: 1rem; background: #e0e7ff; border-radius: 0.5rem;">
+                                    <p style="font-size: 0.875rem; color: #1f2937; font-weight: 600; margin-bottom: 0.5rem;">Additional Costs to Consider:</p>
+                                    <ul style="font-size: 0.75rem; color: #374151; margin-left: 1.25rem; line-height: 1.6;">
+                                        <li><strong>Homeowners Association (HOA):</strong> Already included above if applicable</li>
+                                        <li><strong>Private Mortgage Insurance (PMI):</strong> Required if down payment is less than 20% - typically 0.5-1% of loan annually</li>
+                                        <li><strong>Utilities:</strong> Electric, gas, water, sewer, trash - varies by location ($150-400/month typical)</li>
+                                        <li><strong>Repairs & Maintenance:</strong> Budget 1-3% of home value annually for upkeep</li>
+                                        <li><strong>Special Assessments:</strong> HOA or municipal charges for major projects</li>
+                                        <li><strong>Flood Insurance:</strong> Required in flood zones ($400-2,000+/year depending on risk)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        </div>
+
+                        <!-- Rent vs Buy Comparison -->
+                        <div id="rentVsBuyResults" class="hidden">
+                            <!-- Monthly Comparison -->
+                            <div class="result-card result-card-blue">
+                                <h3>Monthly Cost Comparison</h3>
+                                
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                                    <div style="background: white; padding: 1rem; border-radius: 0.5rem;">
+                                        <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem;">Renting</div>
+                                        <div style="font-size: 1.5rem; font-weight: bold; color: #059669;" id="rentMonthlyTotal">$0</div>
+                                        <div style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">Rent + Insurance</div>
+                                    </div>
+                                    <div style="background: white; padding: 1rem; border-radius: 0.5rem;">
+                                        <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem;">Buying</div>
+                                        <div style="font-size: 1.5rem; font-weight: bold; color: #2563eb;" id="buyMonthlyTotal">$0</div>
+                                        <div style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">PITI + Maintenance</div>
+                                    </div>
+                                </div>
+
+                                <div class="total-row">
+                                    <span class="total-label">Monthly Difference</span>
+                                    <span class="total-value" id="monthlyDifference">$0</span>
+                                </div>
+                                <p style="text-align: center; font-size: 0.75rem; color: #6b7280; margin-top: 0.5rem;" id="monthlyWinner">-</p>
+                            </div>
+
+                            <!-- Long-term Wealth Comparison -->
+                            <div class="result-card result-card-purple">
+                                <h3>Wealth After <span id="yearsDisplay">5</span> Years</h3>
+                                
+                                <div class="metric-card">
+                                    <div class="metric-label">If You Rent & Invest the Difference</div>
+                                    <div class="metric-value metric-value-large metric-value-green" id="rentNetWorth">$0</div>
+                                    <div class="metric-hint">Investment portfolio value minus rent paid</div>
+                                </div>
+
+                                <div class="metric-card">
+                                    <div class="metric-label">If You Buy</div>
+                                    <div class="metric-value metric-value-large" style="color: #2563eb;" id="buyNetWorth">$0</div>
+                                    <div class="metric-hint">Home equity minus costs paid</div>
+                                </div>
+
+                                <div class="total-row">
+                                    <span class="total-label">Net Wealth Difference</span>
+                                    <span class="total-value" style="color: #7c3aed;" id="wealthDifference">$0</span>
+                                </div>
+                                <p style="text-align: center; font-size: 0.875rem; color: #1f2937; margin-top: 0.5rem; font-weight: 600;" id="wealthWinner">-</p>
+                            </div>
+
+                            <!-- Breakeven Analysis -->
+                            <div class="result-card result-card-green">
+                                <h3>Break-Even Analysis</h3>
+                                
+                                <div class="metric-card">
+                                    <div class="metric-label">Break-Even Point</div>
+                                    <div class="metric-value" id="breakEvenYears">0 years</div>
+                                    <div class="metric-hint" id="breakEvenExplanation">Time until buying becomes more profitable</div>
+                                </div>
+
+                                <div style="background: white; padding: 1rem; border-radius: 0.5rem; margin-top: 0.75rem;">
+                                    <p style="font-size: 0.875rem; color: #374151; line-height: 1.6;" id="recommendation">-</p>
+                                </div>
+                            </div>
+
+                            <!-- Key Factors -->
+                            <div style="background: #fef3c7; padding: 1rem; border-radius: 0.5rem; border-left: 4px solid #f59e0b;">
+                                <p style="font-size: 0.875rem; color: #1f2937; font-weight: 600; margin-bottom: 0.5rem;">Consider These Factors:</p>
+                                <ul style="font-size: 0.75rem; color: #374151; margin-left: 1.25rem; line-height: 1.6;">
+                                    <li><strong>How long will you stay?</strong> Buying usually pays off after 5+ years</li>
+                                    <li><strong>Job stability:</strong> Renting offers more flexibility if you might relocate</li>
+                                    <li><strong>Market conditions:</strong> In hot markets, appreciation can favor buying</li>
+                                    <li><strong>Tax benefits:</strong> Mortgage interest deduction can reduce costs (not calculated here)</li>
+                                    <li><strong>Lifestyle:</strong> Homeownership means maintenance responsibility but also control</li>
+                                    <li><strong>Opportunity cost:</strong> Could you earn more investing vs. building equity?</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Disclaimer -->
+                        <div class="disclaimer">
+                            <p class="disclaimer-text">
+                                <strong>Important:</strong> This calculator provides estimates based on regional averages. For the most accurate calculation:
+                            </p>
+                            <ul style="font-size: 0.75rem; color: #374151; margin-left: 1.25rem; margin-top: 0.5rem; line-height: 1.6;">
+                                <li>Contact your county tax assessor's office for exact property tax rates</li>
+                                <li>Get insurance quotes from 2-3 local providers (rates vary significantly by neighborhood)</li>
+                                <li>Ask about state-specific costs (transfer taxes, recording fees, attorney requirements)</li>
+                                <li>Consider local HOA fees, condo fees, or special district assessments</li>
+                                <li>Check if you're in a flood zone (FEMA flood maps) - flood insurance may be required</li>
+                                <li>Research local utility costs - they vary greatly by region and climate</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentMode = 'buyer';
+
+        function setMode(mode) {
+            currentMode = mode;
+            
+            // Update button styles
+            const buyerBtn = document.getElementById('buyerBtn');
+            const investorBtn = document.getElementById('investorBtn');
+            const rentVsBuyBtn = document.getElementById('rentVsBuyBtn');
+            
+            // Reset all buttons
+            buyerBtn.className = 'btn btn-inactive';
+            investorBtn.className = 'btn btn-inactive';
+            rentVsBuyBtn.className = 'btn btn-inactive';
+            
+            // Hide all mode-specific sections
+            document.getElementById('investmentInputs').classList.add('hidden');
+            document.getElementById('rentVsBuyInputs').classList.add('hidden');
+            document.getElementById('investmentMetrics').classList.add('hidden');
+            document.getElementById('buyerSummary').classList.add('hidden');
+            document.getElementById('rentVsBuyResults').classList.add('hidden');
+            
+            if (mode === 'buyer') {
+                buyerBtn.className = 'btn btn-active';
+                document.getElementById('buyerSummary').classList.remove('hidden');
+                document.getElementById('resultsTitle').textContent = 'Monthly Payment Breakdown';
+            } else if (mode === 'investor') {
+                investorBtn.className = 'btn btn-active';
+                document.getElementById('investmentInputs').classList.remove('hidden');
+                document.getElementById('investmentMetrics').classList.remove('hidden');
+                document.getElementById('resultsTitle').textContent = 'Investment Analysis';
+            } else if (mode === 'rentVsBuy') {
+                rentVsBuyBtn.className = 'btn btn-active';
+                document.getElementById('rentVsBuyInputs').classList.remove('hidden');
+                document.getElementById('rentVsBuyResults').classList.remove('hidden');
+                document.getElementById('resultsTitle').textContent = 'Rent vs. Buy Analysis';
+            }
+            
+            calculate();
+        }
+
+        function estimatePropertyTaxRate(zipCode) {
+            if (!zipCode || zipCode.length < 1) return 1.2;
+            
+            const firstDigit = zipCode.charAt(0);
+            const stateRates = {
+                '0': 1.8, '1': 1.5, '2': 1.0, '3': 1.1, '4': 1.3,
+                '5': 1.4, '6': 1.5, '7': 0.8, '8': 0.7, '9': 0.9
+            };
+            
+            return stateRates[firstDigit] || 1.2;
+        }
+
+        function estimateInsurance(zipCode, homeValue, squareFeet) {
+            if (!zipCode || zipCode.length < 1) return homeValue * 0.005;
+            
+            const firstDigit = zipCode.charAt(0);
+            const baseRate = 0.005;
+            
+            const regionalMultipliers = {
+                '0': 1.1, '1': 1.0, '2': 1.2, '3': 1.4, '4': 0.9,
+                '5': 0.85, '6': 0.9, '7': 1.3, '8': 1.0, '9': 1.1
+            };
+            
+            const multiplier = regionalMultipliers[firstDigit] || 1.0;
+            const replacementCost = squareFeet * 150;
+            const annualInsurance = replacementCost * baseRate * multiplier;
+            
+            return annualInsurance;
+        }
+
+        function calculateMortgage(principal, rate, years) {
+            const monthlyRate = rate / 100 / 12;
+            const numPayments = years * 12;
+            
+            if (monthlyRate === 0) return principal / numPayments;
+            
+            return principal * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / 
+                   (Math.pow(1 + monthlyRate, numPayments) - 1);
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(amount);
+        }
+
+        function formatNumber(num) {
+            return new Intl.NumberFormat('en-US').format(Math.round(num));
+        }
+
+        function calculate() {
+            // Get input values
+            const purchasePrice = parseFloat(document.getElementById('purchasePrice').value) || 0;
+            const zipCode = document.getElementById('zipCode').value;
+            const squareFeet = parseFloat(document.getElementById('squareFeet').value) || 1500;
+            const downPaymentPercent = parseFloat(document.getElementById('downPaymentPercent').value);
+            const interestRate = parseFloat(document.getElementById('interestRate').value) || 0;
+            const loanTerm = parseInt(document.getElementById('loanTerm').value);
+            const hoaFees = parseFloat(document.getElementById('hoaFees').value) || 0;
+            
+            // Update labels
+            document.getElementById('downPaymentLabel').textContent = downPaymentPercent;
+            const downPayment = purchasePrice * (downPaymentPercent / 100);
+            const loanAmount = purchasePrice - downPayment;
+            document.getElementById('downPaymentAmount').textContent = '$' + formatNumber(downPayment);
+            document.getElementById('loanAmount').textContent = 'Loan: $' + formatNumber(loanAmount);
+            
+            // Calculate property tax and insurance
+            const propertyTaxRate = estimatePropertyTaxRate(zipCode);
+            const annualPropertyTax = (purchasePrice * propertyTaxRate) / 100;
+            const monthlyPropertyTax = annualPropertyTax / 12;
+            
+            const annualInsurance = estimateInsurance(zipCode, purchasePrice, squareFeet);
+            const monthlyInsurance = annualInsurance / 12;
+            
+            // Calculate mortgage
+            const mortgagePI = calculateMortgage(loanAmount, interestRate, loanTerm);
+            
+            // Update tax rate display
+            document.getElementById('taxRateDisplay').textContent = propertyTaxRate.toFixed(2);
+            
+            // Calculate PMI if down payment is less than 20%
+            let monthlyPMI = 0;
+            if (downPaymentPercent < 20) {
+                // PMI typically 0.5-1% annually, we'll use 0.75% as average
+                const annualPMI = loanAmount * 0.0075;
+                monthlyPMI = annualPMI / 12;
+                document.getElementById('pmiRow').classList.remove('hidden');
+                document.getElementById('pmiDisplay').textContent = formatCurrency(monthlyPMI);
+                document.getElementById('pmiWarning').textContent = '⚠️ PMI required - adds ~0.75% of loan amount annually';
+            } else {
+                document.getElementById('pmiRow').classList.add('hidden');
+                document.getElementById('pmiWarning').textContent = '';
+            }
+            
+            // Display monthly expenses
+            document.getElementById('mortgagePI').textContent = formatCurrency(mortgagePI);
+            document.getElementById('propertyTax').textContent = formatCurrency(monthlyPropertyTax);
+            document.getElementById('insurance').textContent = formatCurrency(monthlyInsurance);
+            
+            // HOA
+            if (hoaFees > 0) {
+                document.getElementById('hoaRow').classList.remove('hidden');
+                document.getElementById('hoaDisplay').textContent = formatCurrency(hoaFees);
+            } else {
+                document.getElementById('hoaRow').classList.add('hidden');
+            }
+            
+            let monthlyMaintenance = 0;
+            let monthlyPropertyManagement = 0;
+            
+            if (currentMode === 'investor') {
+                const monthlyRent = parseFloat(document.getElementById('monthlyRent').value) || 0;
+                const vacancyRate = parseFloat(document.getElementById('vacancyRate').value);
+                const propertyManagementPercent = parseFloat(document.getElementById('propertyManagementPercent').value);
+                const maintenancePercent = parseFloat(document.getElementById('maintenancePercent').value);
+                
+                // Update labels
+                document.getElementById('vacancyRateLabel').textContent = vacancyRate;
+                document.getElementById('propertyManagementLabel').textContent = propertyManagementPercent;
+                document.getElementById('maintenanceLabel').textContent = maintenancePercent;
+                
+                monthlyMaintenance = (purchasePrice * (maintenancePercent / 100)) / 12;
+                monthlyPropertyManagement = monthlyRent * (propertyManagementPercent / 100);
+                
+                document.getElementById('maintenanceRow').classList.remove('hidden');
+                document.getElementById('propertyManagementRow').classList.remove('hidden');
+                document.getElementById('maintenanceDisplay').textContent = formatCurrency(monthlyMaintenance);
+                document.getElementById('propertyManagementDisplay').textContent = formatCurrency(monthlyPropertyManagement);
+                
+                // Calculate investment metrics
+                const effectiveRent = monthlyRent * (1 - vacancyRate / 100);
+                const totalMonthly = mortgagePI + monthlyPropertyTax + monthlyInsurance + monthlyPMI + hoaFees + 
+                                    monthlyMaintenance + monthlyPropertyManagement;
+                const monthlyCashFlow = effectiveRent - totalMonthly;
+                const annualCashFlow = monthlyCashFlow * 12;
+                
+                // Estimate closing costs (4% average)
+                const estimatedClosingCosts = purchasePrice * 0.04;
+                const totalInitialInvestment = downPayment + estimatedClosingCosts;
+                
+                const cashOnCashReturn = (annualCashFlow / totalInitialInvestment) * 100;
+                
+                const annualNOI = (effectiveRent * 12) - ((monthlyPropertyTax + monthlyInsurance + 
+                                  hoaFees + monthlyMaintenance + monthlyPropertyManagement) * 12);
+                const capRate = (annualNOI / purchasePrice) * 100;
+                
+                document.getElementById('effectiveRent').textContent = formatCurrency(effectiveRent);
+                document.getElementById('vacancyNote').textContent = `After ${vacancyRate}% vacancy`;
+                document.getElementById('monthlyCashFlow').textContent = formatCurrency(monthlyCashFlow);
+                document.getElementById('monthlyCashFlow').className = monthlyCashFlow >= 0 ? 
+                    'metric-value metric-value-large metric-value-green' : 'metric-value metric-value-large metric-value-red';
+                document.getElementById('annualCashFlow').textContent = formatCurrency(annualCashFlow);
+                document.getElementById('cashOnCash').textContent = cashOnCashReturn.toFixed(2) + '%';
+                document.getElementById('cashOnCash').className = cashOnCashReturn >= 0 ? 
+                    'metric-value metric-value-green' : 'metric-value metric-value-red';
+                document.getElementById('capRate').textContent = capRate.toFixed(2) + '%';
+                document.getElementById('capRate').className = capRate >= 0 ? 
+                    'metric-value metric-value-green' : 'metric-value metric-value-red';
+                document.getElementById('totalInitialInvestment').textContent = formatCurrency(totalInitialInvestment);
+            } else {
+                document.getElementById('maintenanceRow').classList.add('hidden');
+                document.getElementById('propertyManagementRow').classList.add('hidden');
+            }
+            
+            const totalMonthly = mortgagePI + monthlyPropertyTax + monthlyInsurance + monthlyPMI + hoaFees + 
+                                monthlyMaintenance + monthlyPropertyManagement;
+            document.getElementById('totalMonthly').textContent = formatCurrency(totalMonthly);
+            
+            // Rent vs Buy Analysis
+            if (currentMode === 'rentVsBuy') {
+                const rentAmount = parseFloat(document.getElementById('rentAmount').value) || 0;
+                const rentersInsurance = parseFloat(document.getElementById('rentersInsurance').value) || 0;
+                const rentIncrease = parseFloat(document.getElementById('rentIncrease').value);
+                const homeAppreciation = parseFloat(document.getElementById('homeAppreciation').value);
+                const investmentReturn = parseFloat(document.getElementById('investmentReturn').value);
+                const yearsToCompare = parseInt(document.getElementById('yearsToCompare').value);
+                
+                // Update labels
+                document.getElementById('rentIncreaseLabel').textContent = rentIncrease + '%';
+                document.getElementById('homeAppreciationLabel').textContent = homeAppreciation + '%';
+                document.getElementById('investmentReturnLabel').textContent = investmentReturn + '%';
+                document.getElementById('yearsLabel').textContent = yearsToCompare + (yearsToCompare === 1 ? ' year' : ' years');
+                document.getElementById('yearsDisplay').textContent = yearsToCompare;
+                
+                // Monthly costs
+                const monthlyRentCost = rentAmount + rentersInsurance;
+                const monthlyMaint = (purchasePrice * 0.01) / 12; // 1% annual maintenance for buyers
+                const monthlyBuyCost = totalMonthly + monthlyMaint;
+                const monthlyDiff = monthlyBuyCost - monthlyRentCost;
+                
+                document.getElementById('rentMonthlyTotal').textContent = formatCurrency(monthlyRentCost);
+                document.getElementById('buyMonthlyTotal').textContent = formatCurrency(monthlyBuyCost);
+                document.getElementById('monthlyDifference').textContent = formatCurrency(Math.abs(monthlyDiff));
+                
+                if (monthlyDiff > 0) {
+                    document.getElementById('monthlyWinner').textContent = `Renting is cheaper by ${formatCurrency(monthlyDiff)}/month`;
+                    document.getElementById('monthlyWinner').style.color = '#059669';
+                } else {
+                    document.getElementById('monthlyWinner').textContent = `Buying is cheaper by ${formatCurrency(Math.abs(monthlyDiff))}/month`;
+                    document.getElementById('monthlyWinner').style.color = '#2563eb';
+                }
+                
+                // Long-term wealth calculation
+                const downPaymentAmount = downPayment;
+                const closingCosts = purchasePrice * 0.04;
+                const initialCashOutlay = downPaymentAmount + closingCosts;
+                
+                // Renting scenario: invest down payment + monthly difference
+                let rentInvestmentValue = initialCashOutlay; // Start with down payment invested
+                let currentRent = rentAmount;
+                
+                for (let year = 0; year < yearsToCompare; year++) {
+                    // Add monthly savings/costs to investment
+                    for (let month = 0; month < 12; month++) {
+                        const monthlySavings = monthlyBuyCost - (currentRent + rentersInsurance);
+                        rentInvestmentValue += monthlySavings;
+                        rentInvestmentValue *= (1 + investmentReturn / 100 / 12);
+                    }
+                    currentRent *= (1 + rentIncrease / 100);
+                }
+                
+                // Buying scenario: home equity
+                const futureHomeValue = purchasePrice * Math.pow(1 + homeAppreciation / 100, yearsToCompare);
+                let remainingLoan = loanAmount;
+                
+                // Calculate remaining loan balance after N years
+                const monthlyRate = interestRate / 100 / 12;
+                const numPaymentsMade = yearsToCompare * 12;
+                const totalPayments = loanTerm * 12;
+                
+                if (monthlyRate > 0) {
+                    remainingLoan = loanAmount * (Math.pow(1 + monthlyRate, totalPayments) - Math.pow(1 + monthlyRate, numPaymentsMade)) / 
+                                    (Math.pow(1 + monthlyRate, totalPayments) - 1);
+                } else {
+                    remainingLoan = loanAmount - (mortgagePI * numPaymentsMade);
+                }
+                
+                const homeEquity = futureHomeValue - Math.max(0, remainingLoan);
+                const sellingCosts = futureHomeValue * 0.06; // 6% realtor fees
+                const buyNetWorth = homeEquity - sellingCosts;
+                
+                const rentNetWorth = rentInvestmentValue;
+                
+                document.getElementById('rentNetWorth').textContent = formatCurrency(rentNetWorth);
+                document.getElementById('buyNetWorth').textContent = formatCurrency(buyNetWorth);
+                
+                const wealthDiff = buyNetWorth - rentNetWorth;
+                document.getElementById('wealthDifference').textContent = formatCurrency(Math.abs(wealthDiff));
+                
+                if (wealthDiff > 0) {
+                    document.getElementById('wealthWinner').textContent = `Buying is better by ${formatCurrency(wealthDiff)}`;
+                    document.getElementById('wealthWinner').style.color = '#2563eb';
+                } else {
+                    document.getElementById('wealthWinner').textContent = `Renting + investing is better by ${formatCurrency(Math.abs(wealthDiff))}`;
+                    document.getElementById('wealthWinner').style.color = '#059669';
+                }
+                
+                // Break-even calculation
+                let breakEvenYear = 0;
+                for (let year = 1; year <= 30; year++) {
+                    const testHomeValue = purchasePrice * Math.pow(1 + homeAppreciation / 100, year);
+                    const paymentsRemaining = (loanTerm * 12) - (year * 12);
+                    let testRemainingLoan = 0;
+                    
+                    if (paymentsRemaining > 0 && monthlyRate > 0) {
+                        testRemainingLoan = loanAmount * (Math.pow(1 + monthlyRate, totalPayments) - Math.pow(1 + monthlyRate, year * 12)) / 
+                                           (Math.pow(1 + monthlyRate, totalPayments) - 1);
+                    }
+                    
+                    const testEquity = testHomeValue - Math.max(0, testRemainingLoan) - (testHomeValue * 0.06);
+                    
+                    // Rent scenario at this year
+                    let testRentInvestment = initialCashOutlay;
+                    let testCurrentRent = rentAmount;
+                    for (let y = 0; y < year; y++) {
+                        for (let m = 0; m < 12; m++) {
+                            const savings = monthlyBuyCost - (testCurrentRent + rentersInsurance);
+                            testRentInvestment += savings;
+                            testRentInvestment *= (1 + investmentReturn / 100 / 12);
+                        }
+                        testCurrentRent *= (1 + rentIncrease / 100);
+                    }
+                    
+                    if (testEquity > testRentInvestment && breakEvenYear === 0) {
+                        breakEvenYear = year;
+                        break;
+                    }
+                }
+                
+                if (breakEvenYear === 0) {
+                    document.getElementById('breakEvenYears').textContent = '30+ years';
+                    document.getElementById('breakEvenExplanation').textContent = 'Renting may be better long-term with these assumptions';
+                } else {
+                    document.getElementById('breakEvenYears').textContent = breakEvenYear + ' year' + (breakEvenYear === 1 ? '' : 's');
+                    document.getElementById('breakEvenExplanation').textContent = 'After this point, buying becomes more profitable';
+                }
+                
+                // Recommendation
+                let recommendation = '';
+                if (yearsToCompare < 3) {
+                    recommendation = '<strong>Short-term (under 3 years):</strong> Renting is usually better due to high buying/selling transaction costs. Consider renting unless you\'re certain you\'ll stay longer.';
+                } else if (yearsToCompare >= 3 && yearsToCompare < 5) {
+                    if (wealthDiff > 0) {
+                        recommendation = '<strong>Medium-term (3-5 years):</strong> Buying is slightly favorable, but it\'s close. Factor in lifestyle preferences and job stability.';
+                    } else {
+                        recommendation = '<strong>Medium-term (3-5 years):</strong> Renting and investing appears better financially. However, homeownership offers stability and forced savings.';
+                    }
+                } else {
+                    if (wealthDiff > 50000) {
+                        recommendation = '<strong>Long-term (5+ years):</strong> Buying is significantly better financially with these assumptions. Home appreciation and equity building outweigh costs.';
+                    } else if (wealthDiff > 0) {
+                        recommendation = '<strong>Long-term (5+ years):</strong> Buying is moderately better. You\'ll build equity and benefit from appreciation, though returns are similar to investing.';
+                    } else if (wealthDiff > -50000) {
+                        recommendation = '<strong>Long-term (5+ years):</strong> Renting and investing is slightly better financially. However, homeownership offers non-financial benefits like stability and control.';
+                    } else {
+                        recommendation = '<strong>Long-term (5+ years):</strong> Renting and investing appears significantly better with these assumptions. The opportunity cost of the down payment is high.';
+                    }
+                }
+                
+                document.getElementById('recommendation').innerHTML = recommendation;
+            }
+            
+            // Home buyer summary
+            if (currentMode === 'buyer') {
+                // Estimate closing costs (4% average - varies by state from 3-5%)
+                const estimatedClosingCosts = purchasePrice * 0.04;
+                
+                document.getElementById('downPercentDisplay').textContent = downPaymentPercent;
+                document.getElementById('downPaymentSummary').textContent = formatCurrency(downPayment);
+                document.getElementById('closingCostsEstimate').textContent = formatCurrency(estimatedClosingCosts);
+                document.getElementById('totalCashNeeded').textContent = formatCurrency(downPayment + estimatedClosingCosts);
+                
+                const recommendedMonthlyIncome = totalMonthly / 0.28;
+                const recommendedAnnualIncome = recommendedMonthlyIncome * 12;
+                document.getElementById('incomeRecommendation').innerHTML = 
+                    `<strong>Recommended Income:</strong> Your monthly payment should not exceed 28% of your gross monthly income. ` +
+                    `For this payment, you should earn at least <strong>${formatCurrency(recommendedMonthlyIncome)}/month</strong> ` +
+                    `(${formatCurrency(recommendedAnnualIncome)}/year).`;
+            }
+        }
+
+        // Initialize
+        calculate();
+    </script>
+</body>
+</html>
